@@ -1,0 +1,24 @@
+Dependencies for Project 'teplomer', Target 'Target 1': (DO NOT MODIFY !)
+F (.\blinkLED.c)(0x56E87E56)(-c --cpu Cortex-M4.fp -D__EVAL -g -O0 --apcs=interwork --split_sections-I D:\Dropbox\Dropbox\Mgr\SYS2\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\TexasInstruments\MSP432\1.0.3\Device\Include-D__UVISION_VERSION="518" -D_RTE_ -D__MSP432P401R__-o .\objects\blinkled.o --omf_browse .\objects\blinkled.crf --depend .\objects\blinkled.d)
+I (C:\Keil_v5\ARM\PACK\TexasInstruments\MSP432\1.0.3\Device\Include\msp.h)(0x562F3F86)
+I (C:\Keil_v5\ARM\PACK\TexasInstruments\MSP432\1.0.3\Device\Include\msp432p401r.h)(0x5630FA9C)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x569E4CAA)
+I (C:\Keil_v5\ARM\PACK\TexasInstruments\MSP432\1.0.3\Device\Include\msp_compatibility.h)(0x562F3F86)
+I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include\core_cm4.h)(0x56260B6C)
+I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include\core_cmInstr.h)(0x5625F7B0)
+I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include\cmsis_armcc.h)(0x5625F7B0)
+I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include\core_cmFunc.h)(0x5625F7B0)
+I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include\core_cmSimd.h)(0x5625F7B0)
+I (C:\Keil_v5\ARM\PACK\TexasInstruments\MSP432\1.0.3\Device\Include\system_msp432.h)(0x562F3F86)
+F (RTE\Device\MSP432P401R\startup_msp432.s)(0x562F3F86)(--cpu Cortex-M4.fp --pd "__EVAL SETA 1" -g --apcs=interwork -I D:\Dropbox\Dropbox\Mgr\SYS2\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\TexasInstruments\MSP432\1.0.3\Device\Include--pd "__UVISION_VERSION SETA 518" --pd "_RTE_ SETA 1" --pd "__MSP432P401R__ SETA 1"--list .\listings\startup_msp432.lst --xref -o .\objects\startup_msp432.o --depend .\objects\startup_msp432.d)
+F (RTE\Device\MSP432P401R\system_msp432.c)(0x562F3F86)(-c --cpu Cortex-M4.fp -D__EVAL -g -O0 --apcs=interwork --split_sections-I D:\Dropbox\Dropbox\Mgr\SYS2\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\TexasInstruments\MSP432\1.0.3\Device\Include-D__UVISION_VERSION="518" -D_RTE_ -D__MSP432P401R__-o .\objects\system_msp432.o --omf_browse .\objects\system_msp432.crf --depend .\objects\system_msp432.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x569E4CAA)
+I (C:\Keil_v5\ARM\PACK\TexasInstruments\MSP432\1.0.3\Device\Include\msp.h)(0x562F3F86)
+I (C:\Keil_v5\ARM\PACK\TexasInstruments\MSP432\1.0.3\Device\Include\msp432p401r.h)(0x5630FA9C)
+I (C:\Keil_v5\ARM\PACK\TexasInstruments\MSP432\1.0.3\Device\Include\msp_compatibility.h)(0x562F3F86)
+I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include\core_cm4.h)(0x56260B6C)
+I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include\core_cmInstr.h)(0x5625F7B0)
+I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include\cmsis_armcc.h)(0x5625F7B0)
+I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include\core_cmFunc.h)(0x5625F7B0)
+I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include\core_cmSimd.h)(0x5625F7B0)
+I (C:\Keil_v5\ARM\PACK\TexasInstruments\MSP432\1.0.3\Device\Include\system_msp432.h)(0x562F3F86)
