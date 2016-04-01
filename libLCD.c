@@ -32,12 +32,12 @@ void LCD_pulseEnablePin(void);
 
 void delay_ms(uint8_t time_ms)
 {
-
+	int aux;
 	P1DIR |= BIT0;
 
 	uint8_t time_loop = 0;
 	// set timer 0
-	TA0CCR0 = 50;
+	TA0CCR0 = 5;
 	TA0CCTL0 |= CCIE;		// enable interupt
 	// set clock source to aux on 32768 Hz, set timer to count up, set a prescaler to 8
 	TA0CTL |= TIMER_A_CTL_TASSEL_1 | TIMER_A_CTL_MC__UP | TIMER_A_CTL_ID_3;
@@ -50,6 +50,8 @@ void delay_ms(uint8_t time_ms)
 			time_loop++;
 			P1OUT ^= BIT0;					// jen tak blikam ledkou
 		}
+		else
+			aux++;
 
 		if (time_ms == time_loop)  // if time is up
 		{
@@ -183,6 +185,10 @@ void LCD_init(void)
    /* 2. Initialize display
     *    Turn display on/off, cursor on/off, cursor blinking on/off
     */
+   LCD_sendCommand(DISPLAY_ON);
+   delay_ms(1);
+
+
    LCD_sendCommand(DISPLAY_ON_CMD);
    delay_ms(1);
 

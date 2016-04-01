@@ -13,15 +13,16 @@ void main(void)
     WDTCTL = WDTPW | WDTHOLD;           // Stop watchdog timer
 	
     LCD_init();
+    LCD_clearScreen();
+    LCD_setCursorPosition(0, 0);
+    LCD_printStr("Petr je pasak");
 
 
 
     while (1)
     {
 
-        LCD_clearScreen();
-        LCD_printStr("Connor...");
-               LCD_setCursorPosition(1, 6);
+    			;
     }
 
 }
