@@ -17,11 +17,13 @@ int diag(void);
 uint16_t delka_PWM = 200;
 uint8_t smer_PWM = 0;
 uint8_t count = 0;
-uint8_t B_diag_status;
+uint8_t D_diag_status;
 
 int diag(void)
 {
-
+    LCD_clearScreen();
+    LCD_setCursorPosition(0, 0);
+    LCD_printStr("Spoustim diag");
 
 
 	// nastaveni io
@@ -47,13 +49,23 @@ int diag(void)
 
 	__enable_irq();
 	__enable_interrupt();
+	__wfi();
+
 
 	count = 0;                              // nastaveni poctu smycek blikani
-	B_diag_status = DK_DIAG_STATUS_CHYBA;   // vybiram 1 z N
+	D_diag_status = DK_DIAG_STATUS_CHYBA;   // vybiram 1 z N
 
 	while (count < 2)
-	    ;
-	// sem prijde kod pro diagnostiku soucastek
+	{
+	    // sem prijde kod pro diagnostiku soucastek
+	    __wfi(); // go to lpm0
+
+
+
+	}
+
+
+
 
 
 
@@ -64,23 +76,39 @@ int diag(void)
 				TA2CTL &= ~MC_3;					// zastavuji citac 1
 			    P2OUT = 0;                          // zhasnu modrou ledkou
 
-				if (B_diag_status == DK_DIAG_STATUS_OK) // pokud diagnostika dopadne dobre
-				{
-				    P2OUT |= BIT1;// tak rozsvit zelenou led
-			        delay_ms(1000);
-				    return DK_DIAG_STATUS_OK; // opustit proceduru diagnostiky bez problemu
-				}
+		        switch(D_diag_status)
+		        {
+		        case DK_DIAG_STATUS_OK :
+                    P2OUT |= BIT1;// tak rozsvit zelenou led
+                    LCD_clearScreen();
+                    LCD_setCursorPosition(0, 0);
+                    LCD_printStr("Diag OK");
+                    delay_ms(1000);
+                    return DK_DIAG_STATUS_OK; // opustit proceduru diagnostiky bez problemu
+		            break;
 
-				else if (B_diag_status == DK_DIAG_STATUS_CHYBA)// jinak
-				{
-				    P2OUT |= BIT0;// tak rozsvit cervenou led
-			        delay_ms(1000);
-				    return DK_DIAG_STATUS_CHYBA; // opustit proceduru diagnostiky s chybovou hlaskou
-				}
+		        case DK_DIAG_STATUS_CHYBA :
+                    P2OUT |= BIT0;// tak rozsvit cervenou led
+                    LCD_clearScreen();
+                    LCD_setCursorPosition(0, 0);
+                    LCD_printStr("Nastala chyba");
+                    delay_ms(1000);
+                    return DK_DIAG_STATUS_CHYBA; // opustit proceduru diagnostiky s chybovou hlaskou
+		            break;
 
+		        default:
+		            LCD_clearScreen();
+		            LCD_setCursorPosition(0, 0);
+		            LCD_printStr("Nastala neznama");
+		            LCD_setCursorPosition(1, 0);
+		            LCD_printStr("chyba");
+		        }
 
 	}
 }
+
+
+
 
 void TA2_ISR_Handler(void)
 {
