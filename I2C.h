@@ -11,6 +11,8 @@
 #define BK_I2C_TRANSMIT    ((uint16_t)0x0010)
 #define BK_I2C_TRANSMIT    ((uint16_t)0x0000)
 
+#define BK_I2C_RECEIVE     ((uint16_t)0x0000)
+
 
 
 #endif /* I2C_H_ */

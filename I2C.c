@@ -66,6 +66,9 @@ void I2C_setMode(uint8_t I2C_mode)
 
 }
 
-
-
+uint8_t I2C_icBussy(void)
+{
+    // returning I2C bus status 
+    return (UCB1STATW & UCBBUSY);
+}
 

@@ -12,7 +12,7 @@
 |* Helper Function Prototypes *|
 \******************************/
 
-void delay_ms(uint8_t time_ms);
+void delay_ms(uint16_t time_ms);
 void LCD_sendCommand(char command);
 inline void LCD_sendByte(char byteToSend, uint8_t byteType);
 void LCD_sendNibble(char nibbleToSend);
@@ -29,37 +29,44 @@ void LCD_pulseEnablePin(void);
  *
  * 		void
  */
-
-void delay_ms(uint8_t time_ms)
+uint16_t time_loop = 0;
+void delay_ms(uint16_t time_ms)
 {
-	int aux;
-	P1DIR |= BIT0;
-
-	uint8_t time_loop = 0;
+	time_loop = 0;
 	// set timer 0
-	TA0CCR0 = 5;
+	TA0CCR0 = 3000;
 	TA0CCTL0 |= CCIE;		// enable interupt
-	// set clock source to aux on 32768 Hz, set timer to count up, set a prescaler to 8
-	TA0CTL |= TIMER_A_CTL_TASSEL_1 | TIMER_A_CTL_MC__UP | TIMER_A_CTL_ID_3;
+	// set clock source to aux on 3 MHz, set timer to count up, set a prescaler to 8
+	TA0CTL |= TIMER_A_CTL_TASSEL_2 | TIMER_A_CTL_MC__UP | TIMER_A_CTL_ID_0;
+
+    NVIC->ISER[0] |= 1 << TA0_0_IRQn;
+
+    __enable_irq();
+    __enable_interrupt();
+
+	while(1)
+	{
+			if (time_ms == time_loop)  // if time is up
+			{
+			    TA0CTL &= ~MC_3;        // stop timer
+			    return;
+			}
+	}
+}
 
 
-		if (TA0CCTL0 |= CCIFG) // waiting for interupt flag
-		{
-			TA0CCTL0 &= ~CCIFG;	// drop flag
-			TA0R = 0;			// reset timer time
-			time_loop++;
-			P1OUT ^= BIT0;					// jen tak blikam ledkou
-		}
-		else
-			aux++;
-
-		if (time_ms == time_loop)  // if time is up
-		{
-			TA0CTL &= ~MC_3;		// stop timer
-			return;
-		}
+void TA0_ISR_Handler(void)
+{
+    {
+        TA0CTL &= ~MC_3;            // stop timer
+        TA0CCTL0 &= ~CCIFG;         // drop flag
+        TA0R = 0;                   // reset timer time
+        time_loop++;
+        TA0CTL |= TIMER_A_CTL_MC__UP;
+    }
 
 }
+
 
 /********************\
 |* Public Functions *|
@@ -352,11 +359,11 @@ void LCD_pulseEnablePin(void)
 
    /* Pull EN bit high */
    LCD_OUT_EN |= LCD_PIN_EN;
-   delay_ms(20);
+   delay_ms(1);
 
    /* Pull EN bit low again */
    LCD_OUT_EN &= ~LCD_PIN_EN;
-   delay_ms(20);
+   delay_ms(1);
 }
 
 // vim: tabstop=3 expandtab shiftwidth=3 softtabstop=3
