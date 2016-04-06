@@ -63,6 +63,7 @@ void I2C_setMode(uint8_t I2C_mode)
     */
     UCB1CTLW0 &= ~BK_I2C_TRANSMIT;
     UCB1CTLW0 |=  I2C_mode;
+
 }
 
 uint8_t I2C_icBussy(void)
@@ -70,11 +71,4 @@ uint8_t I2C_icBussy(void)
     // returning I2C bus status 
     return (UCB1STATW & UCBBUSY);
 }
-
-
-
-
-
-
-
 
