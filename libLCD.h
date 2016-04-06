@@ -114,7 +114,7 @@ typedef     unsigned char     uint8_t;
 /******************************\
 |* Public Function Prototypes *|
 \******************************/
-void delay_ms(uint8_t time_ms);
+void delay_ms(uint16_t time_ms);
 void LCD_init(void);
 void LCD_printStr(char *text);
 void LCD_printChar(char character);
