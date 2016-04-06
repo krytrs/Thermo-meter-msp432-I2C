@@ -14,6 +14,7 @@ main.obj: C:/ti/ccsv6/ccs_base/arm/include/CMSIS/core_cmSimd.h
 main.obj: C:/ti/ccsv6/ccs_base/arm/include/system_msp432p401r.h
 main.obj: ../libLCD.h
 main.obj: ../diag.h
+main.obj: ../I2C.h
 
 ../main.c: 
 C:/ti/ccsv6/ccs_base/arm/include/msp.h: 
@@ -29,3 +30,4 @@ C:/ti/ccsv6/ccs_base/arm/include/CMSIS/core_cmSimd.h:
 C:/ti/ccsv6/ccs_base/arm/include/system_msp432p401r.h: 
 ../libLCD.h: 
 ../diag.h: 
+../I2C.h: 

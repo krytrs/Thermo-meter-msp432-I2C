@@ -7,16 +7,19 @@
 #include "msp.h"
 #include "libLCD.h"
 #include "diag.h"
+#include "I2C.h"
 
 void main(void)
 {
 	uint8_t D_stav_diagnostiky = 0;
-	
+	unsigned char teplota;
 
 
     WDTCTL = WDTPW | WDTHOLD;           // Stop watchdog timer
 
     LCD_init();
+    I2C_init();
+    I2C_setAddress(0x48); // adresa 1001000
     P1DIR &= ~BIT1;     // nastaveni port1 pin1 vstupni
     P1REN |=  BIT1;     // nastaveni pulluppu
     P1OUT |=  BIT1;     // pullup proti Vcc
@@ -36,6 +39,10 @@ void main(void)
 
     while (1)
     {
+        I2C_masterReceiveStart();
+        delay_ms(20);
+        teplota = I2C_masterReceive();
+        I2C_masterStop();
        __deep_sleep()   // enter lpm3
     }
 
