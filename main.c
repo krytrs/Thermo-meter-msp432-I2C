@@ -12,7 +12,7 @@
 void main(void)
 {
 	uint8_t D_stav_diagnostiky = 0;
-	unsigned char teplota;
+	unsigned char teplota, teplotaOld;
 
 
     WDTCTL = WDTPW | WDTHOLD;           // Stop watchdog timer
@@ -30,7 +30,7 @@ void main(void)
     P1DIR |=  BIT0;     // nastaveni port 1 pin 0 na vystup, cervena led
     P1OUT &= ~BIT0;     // zhasnuti
 
-    D_stav_diagnostiky = diag();
+    // D_stav_diagnostiky = diag();
 
     NVIC->ISER[1] |= 1 << (PORT1_IRQn-32);     /* 51 PORT1 Interrupt */
 
@@ -40,10 +40,21 @@ void main(void)
     while (1)
     {
         I2C_masterReceiveStart();
-        delay_ms(20);
-        teplota = I2C_masterReceive();
+        teplota = I2C_masterReceived();
         I2C_masterStop();
-       __deep_sleep()   // enter lpm3
+        UCB1IFG = 0;
+
+        if (teplota != teplotaOld)
+        {
+        	LCD_clearScreen();
+        	LCD_setCursorPosition(0,0);
+        	LCD_printStr("Teplota: ");
+        	LCD_print_data(teplota, 9, 0);
+        	teplotaOld = teplota;
+        }
+        delay_ms(500);
+
+        //__deep_sleep()   // enter lpm3
     }
 
 }

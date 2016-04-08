@@ -17,6 +17,7 @@ void LCD_sendCommand(char command);
 inline void LCD_sendByte(char byteToSend, uint8_t byteType);
 void LCD_sendNibble(char nibbleToSend);
 void LCD_pulseEnablePin(void);
+void LCD_print_data(int8_t data, int8_t poziceX, int8_t poziceY);
 
 /* delay ms
  * This function realize waitnig in multiplacion of 1ms
@@ -231,6 +232,18 @@ void LCD_printStr(char *text)
       c++;
    }
 }
+// tato funkce prevadi data a pak je tiskne na displej
+void LCD_print_data(int8_t data, int8_t poziceX, int8_t poziceY)
+{
+	char dataDesitky, dataJednotky;
+	dataDesitky = (data/10)+48;
+	dataJednotky = (data%10)+48;
+	LCD_setCursorPosition(poziceY, poziceX);
+	LCD_printChar(dataDesitky);
+	LCD_printChar(dataJednotky);
+}
+
+
 
 /*-------------------------------------------------------------------------*\
 |* PUBLIC FUNCTION :: LCD_printChar

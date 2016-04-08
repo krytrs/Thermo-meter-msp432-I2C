@@ -14,7 +14,7 @@ void I2C_enable(void);
 void I2C_setMode(uint8_t I2C_mode);
 void I2C_setAddress(unsigned char slaveAddress);
 void I2C_masterReceiveStart(void);
-unsigned char I2C_masterReceive(void);
+unsigned char I2C_masterReceived(void);
 void I2C_masterStop(void);
 
 void I2C_init(void)
@@ -32,7 +32,8 @@ void I2C_init(void)
      * Clock source SMCLK
      */
     UCB1CTLW0 |= UCMST | UCMODE_3 | UCSSEL__SMCLK;
-
+    // set sending ack before stop NOT COMMON in I2C
+    // UCB1CTLW1 |= UCSTPNACK;
     // Seting P6.5 as secondary function, I2c
     P6SEL0 |= 1 << 5;
     P6SEL1 &=  ~(1 << 5);
@@ -43,7 +44,7 @@ void I2C_init(void)
     /*
      * Seting clock prescaler for 100kHz
      */
-    UCB1BRW = 300;
+    UCB1BRW = 30;
 
 }
 
@@ -105,7 +106,7 @@ void I2C_masterReceiveStart(void)
     __enable_interrupt();
 }
 
-unsigned char I2C_masterReceive()
+unsigned char I2C_masterReceived()
 {
     // will return receive buffer
     unsigned char buffer = UCB1RXBUF;

@@ -1,1 +1,1 @@
-"./libLCD.obj" "./main.obj" "./startup_msp432p401r_ccs.obj" "./system_msp432p401r.obj" "../msp432p401r.cmd" -l"libc.a" 
+"./I2C.obj" "./diag.obj" "./libLCD.obj" "./main.obj" "./startup_msp432p401r_ccs.obj" "./system_msp432p401r.obj" "../msp432p401r.cmd" -l"libc.a" 

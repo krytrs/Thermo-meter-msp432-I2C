@@ -10,6 +10,8 @@ GEN_OPTS__FLAG :=
 GEN_CMDS__FLAG := 
 
 ORDERED_OBJS += \
+"./I2C.obj" \
+"./diag.obj" \
 "./libLCD.obj" \
 "./main.obj" \
 "./startup_msp432p401r_ccs.obj" \
@@ -152,8 +154,8 @@ Thermo-meter-msp432-I2C.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)$(BIN_OUTPUTS__QUOTED)
-	-$(RM) "libLCD.pp" "main.pp" "startup_msp432p401r_ccs.pp" "system_msp432p401r.pp" 
-	-$(RM) "libLCD.obj" "main.obj" "startup_msp432p401r_ccs.obj" "system_msp432p401r.obj" 
+	-$(RM) "I2C.pp" "diag.pp" "libLCD.pp" "main.pp" "startup_msp432p401r_ccs.pp" "system_msp432p401r.pp" 
+	-$(RM) "I2C.obj" "diag.obj" "libLCD.obj" "main.obj" "startup_msp432p401r_ccs.obj" "system_msp432p401r.obj" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

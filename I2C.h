@@ -19,7 +19,7 @@ void I2C_enable(void);
 void I2C_setMode(uint8_t I2C_mode);
 void I2C_setAddress(unsigned char slaveAddress);
 void I2C_masterReceiveStart(void);
-unsigned char I2C_masterReceive(void);
+unsigned char I2C_masterReceived(void);
 void I2C_masterStop(void);
 
 #endif /* I2C_H_ */
