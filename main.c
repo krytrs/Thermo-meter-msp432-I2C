@@ -9,10 +9,12 @@
 #include "diag.h"
 #include "I2C.h"
 
+
+
 void main(void)
 {
 	uint8_t D_stav_diagnostiky = 0;
-	unsigned char teplota, teplotaOld;
+	unsigned char teplota = 0, teplotaOld;
 
 
     WDTCTL = WDTPW | WDTHOLD;           // Stop watchdog timer
@@ -20,6 +22,18 @@ void main(void)
     LCD_init();
     I2C_init();
     I2C_setAddress(0x48); // adresa 1001000
+    D_stav_diagnostiky = diag();
+    if (D_stav_diagnostiky == DK_DIAG_STATUS_OK)
+    {
+        P2OUT &= ~BIT1;      // Pokud probehla diagnostika v poradku, zhasni zelenou diodu
+    }
+    else
+    {
+        P2OUT |= BIT0;      // Pokud neprobehla diagnostika v poradku, rozsvit cervenou diodu
+        __deep_sleep()      // a prejdi do lpm3
+    }
+
+
     P1DIR &= ~BIT1;     // nastaveni port1 pin1 vstupni
     P1REN |=  BIT1;     // nastaveni pulluppu
     P1OUT |=  BIT1;     // pullup proti Vcc
@@ -30,13 +44,12 @@ void main(void)
     P1DIR |=  BIT0;     // nastaveni port 1 pin 0 na vystup, cervena led
     P1OUT &= ~BIT0;     // zhasnuti
 
-    // D_stav_diagnostiky = diag();
 
     NVIC->ISER[1] |= 1 << (PORT1_IRQn-32);     /* 51 PORT1 Interrupt */
 
     __enable_irq();
     __enable_interrupt();
-
+    teplotaOld = 200;       // nejak blbne zobrazovani teploty, zajistuji aby smycka probehla aspon jednou
     while (1)
     {
         I2C_masterReceiveStart();
@@ -54,7 +67,9 @@ void main(void)
         }
         delay_ms(500);
 
-        //__deep_sleep()   // enter lpm3
+        __wfi();
+
+
     }
 
 }

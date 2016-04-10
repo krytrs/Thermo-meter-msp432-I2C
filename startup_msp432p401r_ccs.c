@@ -59,6 +59,7 @@ extern unsigned long __STACK_END;
 extern void TA0_ISR_Handler(void);
 extern void TA1_ISR_Handler(void);
 extern void TA2_ISR_Handler(void);
+extern void TA3_ISR_Handler(void);
 extern void port1_ISR_Handler(void);
 
 /* Interrupt vector table.  Note that the proper constructs must be placed on this to */
@@ -93,13 +94,13 @@ void (* const interruptVectors[])(void) =
     defaultISR,                             /* FLCTL ISR                 */
     defaultISR,                             /* COMP0 ISR                 */
     defaultISR,                             /* COMP1 ISR                 */
-    TA0_ISR_Handler,                             /* TA0_0 ISR                 */
+    TA0_ISR_Handler,                        /* TA0_0 ISR                 */
     defaultISR,                             /* TA0_N ISR                 */
 	TA1_ISR_Handler,                        /* TA1_0 ISR                 */
     defaultISR,                             /* TA1_N ISR                 */
-    TA2_ISR_Handler,                             /* TA2_0 ISR                 */
+    TA2_ISR_Handler,                        /* TA2_0 ISR                 */
     defaultISR,                             /* TA2_N ISR                 */
-    defaultISR,                             /* TA3_0 ISR                 */
+    TA3_ISR_Handler,                        /* TA3_0 ISR                 */
     defaultISR,                             /* TA3_N ISR                 */
     defaultISR,                             /* EUSCIA0 ISR               */
     defaultISR,                             /* EUSCIA1 ISR               */

@@ -100,10 +100,11 @@ void I2C_masterReceiveStart(void)
     UCB1CTLW0 |= UCTXSTT;
 
     // wait until address is send
-    while (UCB1CTLW0 & UCTXSTT);
-
     // disable all interupts
     __enable_interrupt();
+    while (UCB1CTLW0 & UCTXSTT);
+
+
 }
 
 unsigned char I2C_masterReceived()

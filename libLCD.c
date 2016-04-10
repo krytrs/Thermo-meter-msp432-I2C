@@ -18,6 +18,8 @@ inline void LCD_sendByte(char byteToSend, uint8_t byteType);
 void LCD_sendNibble(char nibbleToSend);
 void LCD_pulseEnablePin(void);
 void LCD_print_data(int8_t data, int8_t poziceX, int8_t poziceY);
+char LCD_enablePulsReceive(void);
+char LCD_receive(void);
 
 /* delay ms
  * This function realize waitnig in multiplacion of 1ms
@@ -47,7 +49,7 @@ void delay_ms(uint16_t time_ms)
 
 	while(1)
 	{
-			if (time_ms == time_loop)  // if time is up
+			if (time_loop >= time_ms)  // if time is up
 			{
 			    TA0CTL &= ~MC_3;        // stop timer
 			    return;
@@ -378,5 +380,49 @@ void LCD_pulseEnablePin(void)
    LCD_OUT_EN &= ~LCD_PIN_EN;
    delay_ms(1);
 }
+
+char LCD_receive(void)
+{
+    char upNibble, downNibble, result;
+
+    // nastaveni bitu jako vstupni
+    LCD_DIR_DATA &= ~LCD_MASK_DATA;
+
+    P4OUT |= LCD_PIN_RW;
+    P4OUT |= LCD_PIN_RS;
+    //2x enable
+    P4IFG = 0;
+
+    upNibble = LCD_enablePulsReceive();
+    downNibble = LCD_enablePulsReceive();
+    // slozeni do jednoho byte
+    result = ((upNibble << 4) + downNibble);
+
+    // nastaveni bitu jako vystupnich
+    LCD_DIR_DATA |= LCD_MASK_DATA;
+    P4OUT &= ~LCD_PIN_RW;
+    P4OUT &= ~LCD_PIN_RS;
+    // odeslani vysledku
+    return result;
+}
+
+// nutne protoze stav portu se cte v momente kdyz je EN v log 1 a to se standartním LCD_pulseEnablePin nejde
+char LCD_enablePulsReceive(void)
+{
+       char result;
+
+       /* Pull EN bit high */
+       LCD_OUT_EN |= LCD_PIN_EN;
+       delay_ms(1);
+
+       result = LCD_PIN_DATA & LCD_MASK_DATA;
+
+       /* Pull EN bit low again */
+       LCD_OUT_EN &= ~LCD_PIN_EN;
+       delay_ms(1);
+
+       return result;
+}
+
 
 // vim: tabstop=3 expandtab shiftwidth=3 softtabstop=3

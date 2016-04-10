@@ -34,6 +34,7 @@
 \***************************************/
 /* Data pins must be on same port */
 #define     LCD_DIR_DATA      P4DIR
+#define     LCD_PIN_DATA      P4IN
 #define     LCD_OUT_DATA      P4OUT
 
 /* Reg Select Port */
@@ -122,7 +123,7 @@ void LCD_sendCommand(char command);
 void LCD_setCursorPosition(uint8_t row, uint8_t col);
 void LCD_clearScreen(void);
 void LCD_print_data(int8_t data, int8_t poziceX, int8_t poziceY);
-
+char LCD_receive(void);
 #endif
 
 // vim: tabstop=3 expandtab shiftwidth=3 softtabstop=3
