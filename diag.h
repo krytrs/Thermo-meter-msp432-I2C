@@ -17,7 +17,7 @@
 #define DK_DIAG_STATUS_RESET    4        // diagnostika skoncila resetem
 
 
-#define DK_DIAG_WTD             5        // pocet vterin pro WTD v diagnostice, za jak dlouho se ma diagnostika stihnout
+#define DK_DIAG_WTD_TIME        5        // pocet vterin pro WTD v diagnostice, za jak dlouho se ma diagnostika stihnout
 #define DK_SENSOR_ADDRESS       0x48     // adresa senzoru na i2c
 #define MSK_I2C_ADDR            0x3ff    // vymaskovani bitu pro ziskani adresy z registru UCBxADDRX
 

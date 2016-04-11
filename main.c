@@ -10,7 +10,6 @@
 #include "I2C.h"
 
 
-
 void main(void)
 {
 	uint8_t D_stav_diagnostiky = 0;
@@ -65,11 +64,7 @@ void main(void)
         	LCD_print_data(teplota, 9, 0);
         	teplotaOld = teplota;
         }
-        delay_ms(500);
-
-        __wfi();
-
-
+        delay_ms(1000);
     }
 
 }

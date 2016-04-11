@@ -22,9 +22,10 @@ uint8_t count = 0;
 uint8_t D_diag_status;
 uint8_t pocetTestovani;
 char D_receiveLCD = 0;
-uint8_t WTDdiagnostika = DK_DIAG_WTD;
-int * pointR = (int *)0x0000;
-int * pointRS = (int *)0x000c;
+uint8_t WTDdiagnostika = 0;
+
+//#define PORTBASE 0x1C000
+//unsigned int volatile * const pointR = (unsigned int *) PORTBASE;
 
 
 int i = 0;
@@ -33,12 +34,17 @@ char LCD_testovaciSekvence2[16] = "i sekvence znaku";
 
 int diag(void)
 {
-    // nastaveni io
+    // nastaveni io povoleni modre cervene a modre LED
     P2DIR |= BIT0 + BIT1 + BIT2;
     P2OUT &= ~BIT0;
     P2OUT &= ~BIT1;
     P2OUT &= ~BIT2;
 
+
+    /* Pokud v predeslem spusteni byl program opuštìn SW hard resetem (surce 1)
+    *  tak smaze obrazovku a vypíse hlašku, že chyba nastala
+    *  resetem
+    */
     if ((RSTCTL->HARDRESET_STAT & RSTCTL_HARDRESET_SET_SRC1) == RSTCTL_HARDRESET_SET_SRC1)
     {
         LCD_clearScreen();
@@ -81,10 +87,11 @@ int diag(void)
     __enable_interrupt();
 
 
+    // vypise hlasku Spouštím diagnostiku
     LCD_clearScreen();
     LCD_setCursorPosition(0, 0);
     LCD_printStr("Spoustim diag");
-
+    delay_ms(500);
 
 
 	count = 0;                              // nastaveni poctu smycek blikani
@@ -95,13 +102,33 @@ int diag(void)
 	pocetTestovani = 0;
 	while (count < 2)
 	{
+	    // aby testovani probehlo jen jednou
 	  if (pocetTestovani == 0)
 	  {
 	      pocetTestovani++;
 
             // sem prijde kod pro diagnostiku soucastek
 
-	        //testovani pritomnosti cidla in I2C
+	      // testovani pameti TODO
+	      /*
+	      FLCTL->PRGBRST_CTLSTAT &= ~FLCTL_PRG_CTLSTAT_MODE;
+	      FLCTL->PRGBRST_CTLSTAT |= FLCTL_PRG_CTLSTAT_ENABLE;
+
+          FLCTL->BANK0_MAIN_WEPROT = 0x0000;
+          FLCTL->BANK1_MAIN_WEPROT = 0x0000;
+
+	        *pointR = 0xFFFF0000;
+	        *pointR = 0x00000000;
+           */
+
+	        /* Testovani pritomnosti cidla in I2C
+	         *
+	         * Je proveden ètecí impuls z I2C cidla a pokud
+	         * je vrácena nenulova navratova adresa tak je
+	         * vyhodnoceno ze je cidlo pritomne. Pokud ne, tak
+	         * je vracen chybovy stav I2C
+	         */
+
             I2C_masterReceiveStart();
             I2C_masterReceived();
             I2C_masterStop();
@@ -111,7 +138,13 @@ int diag(void)
                 D_diag_status = DK_DIAG_STATUS_I2C_E;
             }
 
-            // Testování dipleje
+            /* Testování dipleje
+             *
+             * Zde je na displej zapsana testovaci sekvence znaku
+             * a nasledne je zpetne pøeètena. Po pøeètení je porovnana
+             * s zapsanou sekvenci, a pokud si odpovidaji, tak program
+             * pokracuje. Pokud ne, tak je vracena hodnota chyba LCD
+             */
             LCD_clearScreen();
             LCD_setCursorPosition(0,0);
             LCD_printStr(LCD_testovaciSekvence1);
@@ -150,24 +183,30 @@ int diag(void)
 
 
 
-	// Opousteni dignostiky
+	/* Opousteni dignostiky
+	 *
+	 * Nejprve se ceka na probliknuti ledkou a pak zastavuji všechny èitaèe
+	 * a podle nacteneho chyboveho kodu opoustim diagnostiku a zobrazuji na
+	 * display vysledek diagnostiky. Pokud vysledek diagnostiky je OK tak
+	 * rozsvitim zelenou LED, pokud ne tak cervenou. Na závìr je pridana kratka
+	 * doba proto aby se dala informase na displeji vubec precist
+	 */
 	while(count >= 2)
 	{
 				TA1CTL &= ~MC_3;					// zastavuji citac 0
 				TA2CTL &= ~MC_3;					// zastavuji citac 1
+                TA3CTL &= ~MC_3;                    // zastavuji citac 3     WTD pro diagnostiku
 			    P2OUT = 0;                          // zhasnu modrou ledkou
 
 		        switch(D_diag_status)
 		        {
 		        case DK_DIAG_STATUS_OK :
-                    P2OUT |= BIT1;// tak rozsvit zelenou led
                     LCD_clearScreen();
                     LCD_setCursorPosition(0, 0);
                     LCD_printStr("Diag OK");
 		            break;
 
                 case DK_DIAG_STATUS_I2C_E :
-                    P2OUT |= BIT0;// tak rozsvit cervenou led
                     LCD_clearScreen();
                     LCD_setCursorPosition(0, 0);
                     LCD_printStr("Nastala chyba");
@@ -176,7 +215,6 @@ int diag(void)
                     break;
 
                 case DK_DIAG_STATUS_LCD_E :
-                    P2OUT |= BIT0;// tak rozsvit cervenou led
                     LCD_clearScreen();
                     LCD_setCursorPosition(0, 0);
                     LCD_printStr("Nastala chyba");
@@ -186,7 +224,6 @@ int diag(void)
 
 		        case DK_DIAG_STATUS_CHYBA :
 		        default:
-                    P2OUT |= BIT0;// tak rozsvit cervenou led
 		            LCD_clearScreen();
 		            LCD_setCursorPosition(0, 0);
 		            LCD_printStr("Nastala neznama");
@@ -194,15 +231,21 @@ int diag(void)
 		            LCD_printStr("chyba");
                     break;
 		        }
+		        if (D_diag_status == DK_DIAG_STATUS_OK)
+		            P2OUT |= BIT1;// tak rozsvit zelenou led
+		        else
+		            P2OUT |= BIT0;// tak rozsvit cervenou led
+
 		        delay_ms(1000);
-		        TA3CTL &= ~MC_3;                    // zastavuji citac 3     WTD pro diagnostiku
 		        return D_diag_status;
 
 
 	}
 }
 
-
+/* Timery 1 a 2 se pouzivaji pro generovani PWM
+ *
+ */
 
 
 void TA2_ISR_Handler(void)
@@ -229,7 +272,6 @@ void TA2_ISR_Handler(void)
 	TA2CCR0 = delka_PWM; 				// nastaveni doby sviceni
 
 }
-
 void TA1_ISR_Handler(void)
 {
     TA1CTL &= ~MC_3;                    // zastavuji citac
@@ -248,7 +290,13 @@ void TA3_ISR_Handler(void)
     TA3CCTL0 &= ~CCIFG;                 // mazu flag interupt
     TA3R = 0;                           // nuluji registr citace
 
-    if (WTDdiagnostika == 0)            // pokud WTD dojde
+    /* Spusteni resetu
+     * Tato funkce resi funkci WTD a to tak, ze pokud
+     * Handler 1 Sec interuptu probehne toliktar kolik je uvedeno v
+     * DK_DIAG_WTD_TIME tak se spusti reset a nastavi se priznak resetu
+     * na source 1
+     */
+    if (WTDdiagnostika == DK_DIAG_WTD_TIME)            // pokud WTD dojde
     {
         D_diag_status = DK_DIAG_STATUS_CHYBA;   // nastavit status chybu, zbytecne
         RSTCTL->HARDRESET_SET = RSTCTL_HARDRESET_SET_SRC1;  // nastavit status reset
@@ -256,7 +304,7 @@ void TA3_ISR_Handler(void)
 
     }
     else
-    WTDdiagnostika--;
+    WTDdiagnostika++;
 
     TA3CTL |= TIMER_A_CTL_MC__UP;       // zapinam citac 1
 
