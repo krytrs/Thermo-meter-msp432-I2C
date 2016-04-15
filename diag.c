@@ -24,8 +24,8 @@ uint8_t pocetTestovani;
 char D_receiveLCD = 0;
 uint8_t WTDdiagnostika = 0;
 
-//#define PORTBASE 0x1C000
-//unsigned int volatile * const pointR = (unsigned int *) PORTBASE;
+#define PORTBASE 0x1C000
+unsigned int volatile * const pointR = (unsigned int *) PORTBASE;
 
 
 int i = 0;
@@ -110,7 +110,9 @@ int diag(void)
             // sem prijde kod pro diagnostiku soucastek
 
 	      // testovani pameti TODO
-	      /*
+
+	      SYSCTL->SRAM_BANKEN = SYSCTL_SRAM_BANKEN_BNK7_EN;   // Enable all SRAM banks
+
 	      FLCTL->PRGBRST_CTLSTAT &= ~FLCTL_PRG_CTLSTAT_MODE;
 	      FLCTL->PRGBRST_CTLSTAT |= FLCTL_PRG_CTLSTAT_ENABLE;
 
@@ -119,7 +121,7 @@ int diag(void)
 
 	        *pointR = 0xFFFF0000;
 	        *pointR = 0x00000000;
-           */
+
 
 	        /* Testovani pritomnosti cidla in I2C
 	         *
@@ -177,11 +179,6 @@ int diag(void)
 
 	    __wfi(); // go to lpm0
 	}
-
-
-
-
-
 
 	/* Opousteni dignostiky
 	 *
