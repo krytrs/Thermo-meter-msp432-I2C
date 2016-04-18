@@ -1,34 +1,33 @@
 ******************************************************************************
                   TI ARM Linker PC v5.2.7                      
 ******************************************************************************
->> Linked Fri Apr 15 09:20:26 2016
+>> Linked Sun Apr 17 19:48:05 2016
 
 OUTPUT FILE NAME:   <Thermo-meter-msp432-I2C.out>
-ENTRY POINT SYMBOL: "_c_int00"  address: 0000111d
+ENTRY POINT SYMBOL: "_c_int00"  address: 00001231
 
 
 MEMORY CONFIGURATION
 
          name            origin    length      used     unused   attr    fill
 ----------------------  --------  ---------  --------  --------  ----  --------
-  MAIN                  00000000   00040000  00001312  0003ecee  R  X
+  MAIN                  00000000   00040000  00001422  0003ebde  R  X
   INFO                  00200000   00004000  00000000  00004000  R  X
   SRAM_CODE             01000000   00010000  00000000  00010000  RW X
-  SRAM_DATA             20000000   00010000  00000248  0000fdb8  RW  
+  SRAM_DATA             20000000   00010000  0000024c  0000fdb4  RW  
 
 
 SEGMENT ALLOCATION MAP
 
 run origin  load origin   length   init length attrs members
 ----------  ----------- ---------- ----------- ----- -------
-00000000    00000000    00001318   00001318    r-x
+00000000    00000000    00001428   00001428    r-x
   00000000    00000000    00000140   00000140    r-- .intvecs
-  00000140    00000140    00001166   00001166    r-x .text
-  000012a8    000012a8    00000004   00000004    r-- .const
-  000012b0    000012b0    00000068   00000068    r-- .cinit
-20000000    20000000    00000048   00000000    rw-
-  20000000    20000000    00000046   00000000    rw- .data
-  20000046    20000046    00000002   00000000    rw- .bss
+  00000140    00000140    0000127a   0000127a    r-x .text
+  000013c0    000013c0    00000068   00000068    r-- .cinit
+20000000    20000000    0000004c   00000000    rw-
+  20000000    20000000    0000004a   00000000    rw- .data
+  2000004a    2000004a    00000002   00000000    rw- .bss
 2000fe00    2000fe00    00000200   00000000    rw-
   2000fe00    2000fe00    00000200   00000000    rw- .stack
 
@@ -41,61 +40,57 @@ section   page    origin      length       input sections
 .intvecs   0    00000000    00000140     
                   00000000    00000140     startup_msp432p401r_ccs.obj (.intvecs:retain)
 
-.text      0    00000140    00001166     
-                  00000140    00000520     diag.obj (.text)
-                  00000660    0000033c     libLCD.obj (.text)
-                  0000099c    00000328     system_msp432p401r.obj (.text)
-                  00000cc4    0000016c     main.obj (.text)
-                  00000e30    000000fc     I2C.obj (.text)
-                  00000f2c    0000009c     rtsv7M4_T_le_v4SPD16_eabi.lib : memcpy_t2.obj (.text)
-                  00000fc8    0000007a                                   : memset_t2.obj (.text)
-                  00001042    00000002     --HOLE-- [fill = 0]
-                  00001044    0000006c                                   : autoinit.obj (.text)
-                  000010b0    0000006a                                   : copy_decompress_rle.obj (.text)
-                  0000111a    00000002     --HOLE-- [fill = 0]
-                  0000111c    00000050                                   : boot.obj (.text)
-                  0000116c    0000004c                                   : cpy_tbl.obj (.text)
-                  000011b8    00000048     libLCD.obj (.text:LCD_sendByte)
-                  00001200    00000044     rtsv7M4_T_le_v4SPD16_eabi.lib : exit.obj (.text)
-                  00001244    00000018                                   : args_main.obj (.text)
-                  0000125c    00000014                                   : _lock.obj (.text)
-                  00001270    00000012     startup_msp432p401r_ccs.obj (.text)
-                  00001282    0000000e     rtsv7M4_T_le_v4SPD16_eabi.lib : copy_decompress_none.obj (.text:decompress:none)
-                  00001290    0000000c                                   : copy_zero_init.obj (.text:decompress:ZI)
-                  0000129c    00000006                                   : copy_decompress_rle.obj (.text:decompress:rle24)
-                  000012a2    00000004                                   : pre_init.obj (.text)
+.text      0    00000140    0000127a     
+                  00000140    00000634     diag.obj (.text)
+                  00000774    0000033c     libLCD.obj (.text)
+                  00000ab0    00000328     system_msp432p401r.obj (.text)
+                  00000dd8    0000016c     main.obj (.text)
+                  00000f44    000000fc     I2C.obj (.text)
+                  00001040    0000009c     rtsv7M4_T_le_v4SPD16_eabi.lib : memcpy_t2.obj (.text)
+                  000010dc    0000007a                                   : memset_t2.obj (.text)
+                  00001156    00000002     --HOLE-- [fill = 0]
+                  00001158    0000006c                                   : autoinit.obj (.text)
+                  000011c4    0000006a                                   : copy_decompress_rle.obj (.text)
+                  0000122e    00000002     --HOLE-- [fill = 0]
+                  00001230    00000050                                   : boot.obj (.text)
+                  00001280    0000004c                                   : cpy_tbl.obj (.text)
+                  000012cc    00000048     libLCD.obj (.text:LCD_sendByte)
+                  00001314    00000044     rtsv7M4_T_le_v4SPD16_eabi.lib : exit.obj (.text)
+                  00001358    00000018                                   : args_main.obj (.text)
+                  00001370    00000014                                   : _lock.obj (.text)
+                  00001384    00000012     startup_msp432p401r_ccs.obj (.text)
+                  00001396    0000000e     rtsv7M4_T_le_v4SPD16_eabi.lib : copy_decompress_none.obj (.text:decompress:none)
+                  000013a4    0000000c                                   : copy_zero_init.obj (.text:decompress:ZI)
+                  000013b0    00000006                                   : copy_decompress_rle.obj (.text:decompress:rle24)
+                  000013b6    00000004                                   : pre_init.obj (.text)
 
-.const     0    000012a8    00000004     
-                  000012a8    00000004     diag.obj (.const)
-
-.cinit     0    000012b0    00000068     
-                  000012b0    0000003e     (.cinit..data.load) [load image, compression = rle]
-                  000012ee    00000002     --HOLE-- [fill = 0]
-                  000012f0    0000000c     (__TI_handler_table)
-                  000012fc    00000004     --HOLE-- [fill = 0]
-                  00001300    00000008     (.cinit..bss.load) [load image, compression = zero_init]
-                  00001308    00000010     (__TI_cinit_table)
+.cinit     0    000013c0    00000068     
+                  000013c0    00000042     (.cinit..data.load) [load image, compression = rle]
+                  00001402    00000002     --HOLE-- [fill = 0]
+                  00001404    0000000c     (__TI_handler_table)
+                  00001410    00000008     (.cinit..bss.load) [load image, compression = zero_init]
+                  00001418    00000010     (__TI_cinit_table)
 
 .init_array 
 *          0    00000000    00000000     UNINITIALIZED
 
-.data      0    20000000    00000046     UNINITIALIZED
-                  20000000    0000002c     diag.obj (.data)
-                  2000002c    00000008     rtsv7M4_T_le_v4SPD16_eabi.lib : _lock.obj (.data)
-                  20000034    00000008                                   : exit.obj (.data)
-                  2000003c    00000004                                   : stkdepth_vars.obj (.data)
-                  20000040    00000004     system_msp432p401r.obj (.data)
-                  20000044    00000002     libLCD.obj (.data)
+.data      0    20000000    0000004a     UNINITIALIZED
+                  20000000    00000030     diag.obj (.data)
+                  20000030    00000008     rtsv7M4_T_le_v4SPD16_eabi.lib : _lock.obj (.data)
+                  20000038    00000008                                   : exit.obj (.data)
+                  20000040    00000004                                   : stkdepth_vars.obj (.data)
+                  20000044    00000004     system_msp432p401r.obj (.data)
+                  20000048    00000002     libLCD.obj (.data)
 
-.bss       0    20000046    00000002     UNINITIALIZED
-                  20000046    00000001     (.common:D_diag_status)
-                  20000047    00000001     (.common:pocetTestovani)
+.bss       0    2000004a    00000002     UNINITIALIZED
+                  2000004a    00000001     (.common:D_diag_status)
+                  2000004b    00000001     (.common:pocetTestovani)
 
 .TI.persistent 
 *          0    20000000    00000000     UNINITIALIZED
 
 .TI.noinit 
-*          0    20000046    00000000     UNINITIALIZED
+*          0    2000004a    00000000     UNINITIALIZED
 
 .stack     0    2000fe00    00000200     UNINITIALIZED
                   2000fe00    00000200     --HOLE--
@@ -103,14 +98,14 @@ section   page    origin      length       input sections
 
 LINKER GENERATED COPY TABLES
 
-__TI_cinit_table @ 00001308 records: 2, size/record: 8, table size: 16
-	.data: load addr=000012b0, load size=0000003e bytes, run addr=20000000, run size=00000046 bytes, compression=rle
-	.bss: load addr=00001300, load size=00000008 bytes, run addr=20000046, run size=00000002 bytes, compression=zero_init
+__TI_cinit_table @ 00001418 records: 2, size/record: 8, table size: 16
+	.data: load addr=000013c0, load size=00000042 bytes, run addr=20000000, run size=0000004a bytes, compression=rle
+	.bss: load addr=00001410, load size=00000008 bytes, run addr=2000004a, run size=00000002 bytes, compression=zero_init
 
 
 LINKER GENERATED HANDLER TABLE
 
-__TI_handler_table @ 000012f0 records: 3, size/record: 4, table size: 12
+__TI_handler_table @ 00001404 records: 3, size/record: 4, table size: 12
 	index: 0, handler: __TI_decompress_rle24
 	index: 1, handler: __TI_decompress_none
 	index: 2, handler: __TI_zero_init
@@ -120,95 +115,95 @@ GLOBAL SYMBOLS: SORTED ALPHABETICALLY BY Name
 
 address   name                    
 -------   ----                    
-00001201  C$$EXIT                 
-20000046  D_diag_status           
+00001315  C$$EXIT                 
+2000004a  D_diag_status           
 20000004  D_receiveLCD            
-00000e75  I2C_disable             
-00000e81  I2C_enable              
-00000ec3  I2C_icBussy             
-00000e31  I2C_init                
-00000ecd  I2C_masterReceiveStart  
-00000ef1  I2C_masterReceived      
-00000f05  I2C_masterStop          
-00000e8d  I2C_setAddress          
-00000ea1  I2C_setMode             
-00000729  LCD_clearScreen         
-00000945  LCD_enablePulsReceive   
-00000739  LCD_init                
-00000871  LCD_printChar           
-000007f9  LCD_printStr            
-00000821  LCD_print_data          
-000008b7  LCD_pulseEnablePin      
-000008db  LCD_receive             
-000011b9  LCD_sendByte            
-00000883  LCD_sendCommand         
-00000895  LCD_sendNibble          
-000006ed  LCD_setCursorPosition   
-2000000c  LCD_testovaciSekvence1  
-2000001c  LCD_testovaciSekvence2  
+00000f89  I2C_disable             
+00000f95  I2C_enable              
+00000fd7  I2C_icBussy             
+00000f45  I2C_init                
+00000fe1  I2C_masterReceiveStart  
+00001005  I2C_masterReceived      
+00001019  I2C_masterStop          
+00000fa1  I2C_setAddress          
+00000fb5  I2C_setMode             
+0000083d  LCD_clearScreen         
+00000a59  LCD_enablePulsReceive   
+0000084d  LCD_init                
+00000985  LCD_printChar           
+0000090d  LCD_printStr            
+00000935  LCD_print_data          
+000009cb  LCD_pulseEnablePin      
+000009ef  LCD_receive             
+000012cd  LCD_sendByte            
+00000997  LCD_sendCommand         
+000009a9  LCD_sendNibble          
+00000801  LCD_setCursorPosition   
+20000010  LCD_testovaciSekvence1  
+20000020  LCD_testovaciSekvence2  
 UNDEFED   SHT$$INIT_ARRAY$$Base   
 UNDEFED   SHT$$INIT_ARRAY$$Limit  
-20000040  SystemCoreClock         
-0000099d  SystemCoreClockUpdate   
-00000c11  SystemInit              
-000006bb  TA0_ISR_Handler         
-0000054d  TA1_ISR_Handler         
-000004a5  TA2_ISR_Handler         
-000005a5  TA3_ISR_Handler         
+20000044  SystemCoreClock         
+00000ab1  SystemCoreClockUpdate   
+00000d25  SystemInit              
+000007cf  TA0_ISR_Handler         
+00000661  TA1_ISR_Handler         
+000005e7  TA2_ISR_Handler         
+000006ad  TA3_ISR_Handler         
 4000480c  WDTCTL_SYM              
 20000005  WTDdiagnostika          
 20010000  __STACK_END             
 00000200  __STACK_SIZE            
-00001308  __TI_CINIT_Base         
-00001318  __TI_CINIT_Limit        
-000012f0  __TI_Handler_Table_Base 
-000012fc  __TI_Handler_Table_Limit
-00001045  __TI_auto_init          
-20000034  __TI_cleanup_ptr        
-00001283  __TI_decompress_none    
-0000129d  __TI_decompress_rle24   
-20000038  __TI_dtors_ptr          
+00001418  __TI_CINIT_Base         
+00001428  __TI_CINIT_Limit        
+00001404  __TI_Handler_Table_Base 
+00001410  __TI_Handler_Table_Limit
+00001159  __TI_auto_init          
+20000038  __TI_cleanup_ptr        
+00001397  __TI_decompress_none    
+000013b1  __TI_decompress_rle24   
+2000003c  __TI_dtors_ptr          
 00000000  __TI_static_base__      
-00001291  __TI_zero_init          
-00000fc9  __aeabi_memclr          
-00000fc9  __aeabi_memclr4         
-00000fc9  __aeabi_memclr8         
-00000f2d  __aeabi_memcpy          
-00000f2d  __aeabi_memcpy4         
-00000f2d  __aeabi_memcpy8         
-00000fcb  __aeabi_memset          
-00000fcb  __aeabi_memset4         
-00000fcb  __aeabi_memset8         
+000013a5  __TI_zero_init          
+000010dd  __aeabi_memclr          
+000010dd  __aeabi_memclr4         
+000010dd  __aeabi_memclr8         
+00001041  __aeabi_memcpy          
+00001041  __aeabi_memcpy4         
+00001041  __aeabi_memcpy8         
+000010df  __aeabi_memset          
+000010df  __aeabi_memset4         
+000010df  __aeabi_memset8         
 ffffffff  __binit__               
 ffffffff  __c_args__              
 2000fe00  __stack                 
-00001245  _args_main              
-0000111d  _c_int00                
-2000002c  _lock                   
-0000126b  _nop                    
-00001263  _register_lock          
-0000125d  _register_unlock        
-000012a3  _system_pre_init        
-20000030  _unlock                 
-00001205  abort                   
+00001359  _args_main              
+00001231  _c_int00                
+20000030  _lock                   
+0000137f  _nop                    
+00001377  _register_lock          
+00001371  _register_unlock        
+000013b7  _system_pre_init        
+20000034  _unlock                 
+00001319  abort                   
 ffffffff  binit                   
-0000116d  copy_in                 
+00001281  copy_in                 
 20000003  count                   
-00000665  delay_ms                
+00000779  delay_ms                
 20000000  delka_PWM               
 00000149  diag                    
-0000120d  exit                    
-20000008  i                       
+00001321  exit                    
+2000000c  i                       
 00000000  interruptVectors        
-00000ccd  main                    
-2000003c  main_func_sp            
-00000f2d  memcpy                  
-00000fd1  memset                  
-20000047  pocetTestovani          
-000012a8  pointR                  
-00000de3  port1_ISR_Handler       
+00000de1  main                    
+20000040  main_func_sp            
+00001041  memcpy                  
+000010e5  memset                  
+2000004b  pocetTestovani          
+20000008  pointR                  
+00000ef7  port1_ISR_Handler       
 20000002  smer_PWM                
-20000044  time_loop               
+20000048  time_loop               
 
 
 GLOBAL SYMBOLS: SORTED BY Symbol Address 
@@ -219,83 +214,83 @@ address   name
 00000000  interruptVectors        
 00000149  diag                    
 00000200  __STACK_SIZE            
-000004a5  TA2_ISR_Handler         
-0000054d  TA1_ISR_Handler         
-000005a5  TA3_ISR_Handler         
-00000665  delay_ms                
-000006bb  TA0_ISR_Handler         
-000006ed  LCD_setCursorPosition   
-00000729  LCD_clearScreen         
-00000739  LCD_init                
-000007f9  LCD_printStr            
-00000821  LCD_print_data          
-00000871  LCD_printChar           
-00000883  LCD_sendCommand         
-00000895  LCD_sendNibble          
-000008b7  LCD_pulseEnablePin      
-000008db  LCD_receive             
-00000945  LCD_enablePulsReceive   
-0000099d  SystemCoreClockUpdate   
-00000c11  SystemInit              
-00000ccd  main                    
-00000de3  port1_ISR_Handler       
-00000e31  I2C_init                
-00000e75  I2C_disable             
-00000e81  I2C_enable              
-00000e8d  I2C_setAddress          
-00000ea1  I2C_setMode             
-00000ec3  I2C_icBussy             
-00000ecd  I2C_masterReceiveStart  
-00000ef1  I2C_masterReceived      
-00000f05  I2C_masterStop          
-00000f2d  __aeabi_memcpy          
-00000f2d  __aeabi_memcpy4         
-00000f2d  __aeabi_memcpy8         
-00000f2d  memcpy                  
-00000fc9  __aeabi_memclr          
-00000fc9  __aeabi_memclr4         
-00000fc9  __aeabi_memclr8         
-00000fcb  __aeabi_memset          
-00000fcb  __aeabi_memset4         
-00000fcb  __aeabi_memset8         
-00000fd1  memset                  
-00001045  __TI_auto_init          
-0000111d  _c_int00                
-0000116d  copy_in                 
-000011b9  LCD_sendByte            
-00001201  C$$EXIT                 
-00001205  abort                   
-0000120d  exit                    
-00001245  _args_main              
-0000125d  _register_unlock        
-00001263  _register_lock          
-0000126b  _nop                    
-00001283  __TI_decompress_none    
-00001291  __TI_zero_init          
-0000129d  __TI_decompress_rle24   
-000012a3  _system_pre_init        
-000012a8  pointR                  
-000012f0  __TI_Handler_Table_Base 
-000012fc  __TI_Handler_Table_Limit
-00001308  __TI_CINIT_Base         
-00001318  __TI_CINIT_Limit        
+000005e7  TA2_ISR_Handler         
+00000661  TA1_ISR_Handler         
+000006ad  TA3_ISR_Handler         
+00000779  delay_ms                
+000007cf  TA0_ISR_Handler         
+00000801  LCD_setCursorPosition   
+0000083d  LCD_clearScreen         
+0000084d  LCD_init                
+0000090d  LCD_printStr            
+00000935  LCD_print_data          
+00000985  LCD_printChar           
+00000997  LCD_sendCommand         
+000009a9  LCD_sendNibble          
+000009cb  LCD_pulseEnablePin      
+000009ef  LCD_receive             
+00000a59  LCD_enablePulsReceive   
+00000ab1  SystemCoreClockUpdate   
+00000d25  SystemInit              
+00000de1  main                    
+00000ef7  port1_ISR_Handler       
+00000f45  I2C_init                
+00000f89  I2C_disable             
+00000f95  I2C_enable              
+00000fa1  I2C_setAddress          
+00000fb5  I2C_setMode             
+00000fd7  I2C_icBussy             
+00000fe1  I2C_masterReceiveStart  
+00001005  I2C_masterReceived      
+00001019  I2C_masterStop          
+00001041  __aeabi_memcpy          
+00001041  __aeabi_memcpy4         
+00001041  __aeabi_memcpy8         
+00001041  memcpy                  
+000010dd  __aeabi_memclr          
+000010dd  __aeabi_memclr4         
+000010dd  __aeabi_memclr8         
+000010df  __aeabi_memset          
+000010df  __aeabi_memset4         
+000010df  __aeabi_memset8         
+000010e5  memset                  
+00001159  __TI_auto_init          
+00001231  _c_int00                
+00001281  copy_in                 
+000012cd  LCD_sendByte            
+00001315  C$$EXIT                 
+00001319  abort                   
+00001321  exit                    
+00001359  _args_main              
+00001371  _register_unlock        
+00001377  _register_lock          
+0000137f  _nop                    
+00001397  __TI_decompress_none    
+000013a5  __TI_zero_init          
+000013b1  __TI_decompress_rle24   
+000013b7  _system_pre_init        
+00001404  __TI_Handler_Table_Base 
+00001410  __TI_Handler_Table_Limit
+00001418  __TI_CINIT_Base         
+00001428  __TI_CINIT_Limit        
 20000000  delka_PWM               
 20000002  smer_PWM                
 20000003  count                   
 20000004  D_receiveLCD            
 20000005  WTDdiagnostika          
-20000008  i                       
-2000000c  LCD_testovaciSekvence1  
-2000001c  LCD_testovaciSekvence2  
-2000002c  _lock                   
-20000030  _unlock                 
-20000034  __TI_cleanup_ptr        
-20000038  __TI_dtors_ptr          
-2000003c  main_func_sp            
-20000040  SystemCoreClock         
-20000044  time_loop               
-20000046  D_diag_status           
-20000047  pocetTestovani          
+20000008  pointR                  
+2000000c  i                       
+20000010  LCD_testovaciSekvence1  
+20000020  LCD_testovaciSekvence2  
+20000030  _lock                   
+20000034  _unlock                 
+20000038  __TI_cleanup_ptr        
+2000003c  __TI_dtors_ptr          
+20000040  main_func_sp            
+20000044  SystemCoreClock         
+20000048  time_loop               
+2000004a  D_diag_status           
+2000004b  pocetTestovani          
 2000fe00  __stack                 
 20010000  __STACK_END             
 4000480c  WDTCTL_SYM              

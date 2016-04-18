@@ -24,8 +24,9 @@ uint8_t pocetTestovani;
 char D_receiveLCD = 0;
 uint8_t WTDdiagnostika = 0;
 
-#define PORTBASE 0x1C000
-unsigned int volatile * const pointR = (unsigned int *) PORTBASE;
+#define PORTBASE 0x20006000
+#define SRAM_konec 0x20007000
+unsigned int volatile * pointR = (unsigned int *) PORTBASE;
 
 
 int i = 0;
@@ -109,18 +110,45 @@ int diag(void)
 
             // sem prijde kod pro diagnostiku soucastek
 
-	      // testovani pameti TODO
+	      	SYSCTL->SRAM_BANKEN = SYSCTL_SRAM_BANKEN_BNK7_EN;   // Enable all SRAM banks
+	      	SYSCTL->SECDATA_UNLOCK = 0x695A;
+	      	FLCTL->PRGBRST_CTLSTAT &= ~FLCTL_PRG_CTLSTAT_MODE;
+	      	FLCTL->PRGBRST_CTLSTAT |= FLCTL_PRG_CTLSTAT_ENABLE;
+          	FLCTL->BANK0_MAIN_WEPROT = 0x0000;
+          	FLCTL->BANK1_MAIN_WEPROT = 0x0000;
+	      	MPU->RASR |= MPU_RASR_AP_PRV_RW_USR_RW;
 
-	      SYSCTL->SRAM_BANKEN = SYSCTL_SRAM_BANKEN_BNK7_EN;   // Enable all SRAM banks
+	      /* Testovani SRAM
+	       * Tato funkce zapise do bloku v pameti sram nuly, ktere pak precte, nasledne zapise 1 a take je precte
+	       */
 
-	      FLCTL->PRGBRST_CTLSTAT &= ~FLCTL_PRG_CTLSTAT_MODE;
-	      FLCTL->PRGBRST_CTLSTAT |= FLCTL_PRG_CTLSTAT_ENABLE;
+	      for (pointR = PORTBASE; pointR < SRAM_konec; pointR++)
+	      	      	{
+	      	      		*pointR = 0x00000000;
+	      	      	}
 
-          FLCTL->BANK0_MAIN_WEPROT = 0x0000;
-          FLCTL->BANK1_MAIN_WEPROT = 0x0000;
+	      for (pointR = PORTBASE; pointR < SRAM_konec; pointR++)
+	      	      	{
+	    	  	  	  if (*pointR != 0x00000000)
+	    	  	  	  {
+	    	  	  		  D_diag_status = DK_DIAG_STATUS_MEM_E;
+	    	  	  	  }
+	      	      	}
 
-	        *pointR = 0xFFFF0000;
-	        *pointR = 0x00000000;
+	      for (pointR = PORTBASE; pointR < SRAM_konec; pointR++)
+	      	      	{
+	      	      		*pointR = 0xFFFFFFFF;
+	      	      	}
+
+	      for (pointR = PORTBASE; pointR < SRAM_konec; pointR++)
+	      	      	{
+	    	  	  	  if (*pointR != 0xFFFFFFFF)
+	    	  	  	  {
+	    	  	  		  D_diag_status = DK_DIAG_STATUS_MEM_E;
+	    	  	  	  }
+	      	      	}
+
+
 
 
 	        /* Testovani pritomnosti cidla in I2C
@@ -219,6 +247,15 @@ int diag(void)
                     LCD_printStr("LCD");
                     break;
 
+                case DK_DIAG_STATUS_MEM_E :
+                    LCD_clearScreen();
+                    LCD_setCursorPosition(0, 0);
+                    LCD_printStr("Nastala chyba");
+                    LCD_setCursorPosition(1, 0);
+                    LCD_printStr("SRAM");
+                    break;
+
+
 		        case DK_DIAG_STATUS_CHYBA :
 		        default:
 		            LCD_clearScreen();
@@ -298,7 +335,6 @@ void TA3_ISR_Handler(void)
         D_diag_status = DK_DIAG_STATUS_CHYBA;   // nastavit status chybu, zbytecne
         RSTCTL->HARDRESET_SET = RSTCTL_HARDRESET_SET_SRC1;  // nastavit status reset
         RSTCTL->RESET_REQ = 0x6901;             // resetovat zarizeni
-
     }
     else
     WTDdiagnostika++;
