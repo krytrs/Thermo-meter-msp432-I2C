@@ -33,12 +33,12 @@ void main(void)
     }
 
 
-    P1DIR &= ~BIT1;     // nastaveni port1 pin1 vstupni
-    P1REN |=  BIT1;     // nastaveni pulluppu
-    P1OUT |=  BIT1;     // pullup proti Vcc
-    P1IES |=  BIT1;     // nastaveni interuptu na sestupnou hranu
-    P1IE  |=  BIT1;     // nastaveni povoleni interuptu
-    P1IFG &= ~BIT1;     // schozeni flagy interuptu
+    P1DIR & = ~BIT1;  // nastaveni port1 pin1 vstupni
+    P1REN | = BIT1;   // nastaveni pulluppu
+    P1OUT | = BIT1;   // pullup proti Vcc
+    P1IES | = BIT1;   // nastaveni interuptu na sestupnou hranu
+    P1IE  | = BIT1;   // nastaveni povoleni interuptu
+    P1IFG & = ~BIT1;  // schozeni flagy interuptu
 
     P1DIR |=  BIT0;     // nastaveni port 1 pin 0 na vystup, cervena led
     P1OUT &= ~BIT0;     // zhasnuti
