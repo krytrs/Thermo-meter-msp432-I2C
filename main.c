@@ -15,7 +15,6 @@ void main(void)
 	uint8_t D_stav_diagnostiky = 0;
 	unsigned char teplota = 0, teplotaOld;
 
-
     WDTCTL = WDTPW | WDTHOLD;           // Stop watchdog timer
 
     LCD_init();
