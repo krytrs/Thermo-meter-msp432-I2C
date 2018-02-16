@@ -30,7 +30,7 @@ void main(void)
         P2OUT |= BIT0;      // Pokud neprobehla diagnostika v poradku, rozsvit cervenou diodu
         __deep_sleep()      // a prejdi do lpm3
     }
-
+    // dalsi pokus
 
     P1DIR & = ~BIT1;  // nastaveni port1 pin1 vstupni
     P1REN | = BIT1;   // nastaveni pulluppu
