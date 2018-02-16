@@ -11,7 +11,7 @@
 #include "libLCD.h"
 #include "I2C.h"
 
-
+// zkouska
 
 // zadefinovani vnitrnich funkci
 int diag(void);
@@ -42,8 +42,8 @@ int diag(void)
     P2OUT &= ~BIT2;
 
 
-    /* Pokud v predeslem spusteni byl program opuštìn SW hard resetem (surce 1)
-    *  tak smaze obrazovku a vypíse hlašku, že chyba nastala
+    /* Pokud v predeslem spusteni byl program opuï¿½tï¿½n SW hard resetem (surce 1)
+    *  tak smaze obrazovku a vypï¿½se hlaï¿½ku, ï¿½e chyba nastala
     *  resetem
     */
     if ((RSTCTL->HARDRESET_STAT & RSTCTL_HARDRESET_SET_SRC1) == RSTCTL_HARDRESET_SET_SRC1)
@@ -88,7 +88,7 @@ int diag(void)
     __enable_interrupt();
 
 
-    // vypise hlasku Spouštím diagnostiku
+    // vypise hlasku Spouï¿½tï¿½m diagnostiku
     LCD_clearScreen();
     LCD_setCursorPosition(0, 0);
     LCD_printStr("Spoustim diag");
@@ -153,8 +153,8 @@ int diag(void)
 
 	        /* Testovani pritomnosti cidla in I2C
 	         *
-	         * Je proveden ètecí impuls z I2C cidla a pokud
-	         * je vrácena nenulova navratova adresa tak je
+	         * Je proveden ï¿½tecï¿½ impuls z I2C cidla a pokud
+	         * je vrï¿½cena nenulova navratova adresa tak je
 	         * vyhodnoceno ze je cidlo pritomne. Pokud ne, tak
 	         * je vracen chybovy stav I2C
 	         */
@@ -168,10 +168,10 @@ int diag(void)
                 D_diag_status = DK_DIAG_STATUS_I2C_E;
             }
 
-            /* Testování dipleje
+            /* Testovï¿½nï¿½ dipleje
              *
              * Zde je na displej zapsana testovaci sekvence znaku
-             * a nasledne je zpetne pøeètena. Po pøeètení je porovnana
+             * a nasledne je zpetne pï¿½eï¿½tena. Po pï¿½eï¿½tenï¿½ je porovnana
              * s zapsanou sekvenci, a pokud si odpovidaji, tak program
              * pokracuje. Pokud ne, tak je vracena hodnota chyba LCD
              */
@@ -210,10 +210,10 @@ int diag(void)
 
 	/* Opousteni dignostiky
 	 *
-	 * Nejprve se ceka na probliknuti ledkou a pak zastavuji všechny èitaèe
+	 * Nejprve se ceka na probliknuti ledkou a pak zastavuji vï¿½echny ï¿½itaï¿½e
 	 * a podle nacteneho chyboveho kodu opoustim diagnostiku a zobrazuji na
 	 * display vysledek diagnostiky. Pokud vysledek diagnostiky je OK tak
-	 * rozsvitim zelenou LED, pokud ne tak cervenou. Na závìr je pridana kratka
+	 * rozsvitim zelenou LED, pokud ne tak cervenou. Na zï¿½vï¿½r je pridana kratka
 	 * doba proto aby se dala informase na displeji vubec precist
 	 */
 	while(count >= 2)
