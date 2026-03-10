@@ -3,120 +3,91 @@
  *
  *  Created on: 4. 4. 2016
  *      Author: Krytrs
+ *
+ *  I2C master driver for MSP432 eUSCI_B1 peripheral.
  */
-#include "msp.h"
-#include "libLCD.h"
-#include "I2C.h"
 
-void I2C_init(void);
-void I2C_disable(void);
-void I2C_enable(void);
-void I2C_setMode(uint8_t I2C_mode);
-void I2C_setAddress(unsigned char slaveAddress);
-void I2C_masterReceiveStart(void);
-unsigned char I2C_masterReceived(void);
-void I2C_masterStop(void);
+#include "msp.h"
+#include "I2C.h"
 
 void I2C_init(void)
 {
+    UCB1CTLW0 |= UCSWRST;  /* Hold peripheral in reset while configuring */
 
-
-    UCB1CTLW0 |= UCSWRST; // hold in reset for setting
     /*
-     * Seting
-     * Own 7bit addr
-     * Slave 7bit addr
-     * Single master
-     * Master mode
-     * I2C mode
-     * Clock source SMCLK
+     * Configure as:
+     *   - Single master, master mode, I2C mode
+     *   - 7-bit own address and slave address
+     *   - Clock source: SMCLK
      */
     UCB1CTLW0 |= UCMST | UCMODE_3 | UCSSEL__SMCLK;
-    // set sending ack before stop NOT COMMON in I2C
-    // UCB1CTLW1 |= UCSTPNACK;
-    // Seting P6.5 as secondary function, I2c
-    P6SEL0 |= 1 << 5;
-    P6SEL1 &=  ~(1 << 5);
-    // Seting P6.4 as secondary function, I2c
-    P6SEL0 |=  1 << 4;
-    P6SEL1 &= ~(1 << 4);
 
-    /*
-     * Seting clock prescaler for 100kHz
-     */
-    UCB1BRW = 30;
+    /* Set P6.5 (SDA) to secondary function (I2C) */
+    P6SEL0 |=  (1U << 5U);
+    P6SEL1 &= ~(1U << 5U);
 
+    /* Set P6.4 (SCL) to secondary function (I2C) */
+    P6SEL0 |=  (1U << 4U);
+    P6SEL1 &= ~(1U << 4U);
+
+    /* Clock prescaler for 100 kHz (SMCLK / 30) */
+    UCB1BRW = 30U;
 }
-
 
 void I2C_disable(void)
 {
-    // set reset bit in high
-    UCB1CTLW0 |= UCSWRST;
+    UCB1CTLW0 |= UCSWRST;   /* Assert software reset */
 }
-
 
 void I2C_enable(void)
 {
-    // set reset bit to 0
-    UCB1CTLW0 &= ~UCSWRST;
+    UCB1CTLW0 &= ~UCSWRST;  /* Release software reset */
 }
 
-void I2C_setAddress(unsigned char slaveAddress)
+void I2C_setAddress(uint8_t slaveAddress)
 {
-    // set slave address to register
     UCB1I2CSA = slaveAddress;
 }
 
-void I2C_setMode(uint8_t I2C_mode)
+void I2C_setMode(uint8_t mode)
 {
-    /* set mode of I2C transiver reciever
-     * BK_I2C_TRANSMIT for transmit
-     * BK_I2C_RECEIVE  for receive
-    */
+    /*
+     * Select transmit or receive mode.
+     * Pass BK_I2C_TRANSMIT or BK_I2C_RECEIVE.
+     */
     UCB1CTLW0 &= ~BK_I2C_TRANSMIT;
-    UCB1CTLW0 |=  I2C_mode;
-
+    UCB1CTLW0 |=  (uint16_t)mode;
 }
 
-uint8_t I2C_icBussy(void)
+uint8_t I2C_isBusy(void)
 {
-    // returning I2C bus status 
-    return (UCB1STATW & UCBBUSY);
+    return (uint8_t)(UCB1STATW & UCBBUSY);
 }
 
 void I2C_masterReceiveStart(void)
 {
-    // enable i2c interface
+    uint32_t timeout = BK_I2C_ADDR_TIMEOUT;
+
     I2C_enable();
 
-    // disable all interupts
-    __disable_interrupt();
-
-    // set i2c to receive mode
+    __disable_interrupt();      /* Protect START sequence */
     I2C_setMode(BK_I2C_RECEIVE);
-
-    // send start
-    UCB1CTLW0 |= UCTXSTT;
-
-    // wait until address is send
-    // disable all interupts
+    UCB1CTLW0 |= UCTXSTT;      /* Send START + slave address */
     __enable_interrupt();
-    while (UCB1CTLW0 & UCTXSTT);
 
-
+    while (((UCB1CTLW0 & UCTXSTT) != 0U) && (timeout > 0U))
+    {
+        timeout--;              /* Guard against a hung bus */
+    }
 }
 
-unsigned char I2C_masterReceived()
+uint8_t I2C_masterReceived(void)
 {
-    // will return receive buffer
-    unsigned char buffer = UCB1RXBUF;
-    return buffer;
+    return (uint8_t)UCB1RXBUF;
 }
 
 void I2C_masterStop(void)
 {
-// send stop
-UCB1CTLW0 |= UCTXSTP;
+    UCB1CTLW0 |= UCTXSTP;      /* Send STOP condition */
 }
 
