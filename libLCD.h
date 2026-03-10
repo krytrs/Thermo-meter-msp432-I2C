@@ -117,7 +117,7 @@ typedef     unsigned char     uint8_t;
 \******************************/
 void delay_ms(uint16_t time_ms);
 void LCD_init(void);
-void LCD_printStr(char *text);
+void LCD_printStr(const char *text);
 void LCD_printChar(char character);
 void LCD_sendCommand(char command);
 void LCD_setCursorPosition(uint8_t row, uint8_t col);

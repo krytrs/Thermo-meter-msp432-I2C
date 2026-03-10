@@ -12,14 +12,10 @@
 |* Helper Function Prototypes *|
 \******************************/
 
-void delay_ms(uint16_t time_ms);
-void LCD_sendCommand(char command);
-inline void LCD_sendByte(char byteToSend, uint8_t byteType);
-void LCD_sendNibble(char nibbleToSend);
-void LCD_pulseEnablePin(void);
-void LCD_print_data(int8_t data, int8_t poziceX, int8_t poziceY);
-char LCD_enablePulsReceive(void);
-char LCD_receive(void);
+static void LCD_sendByte(char byteToSend, uint8_t byteType);
+static void LCD_sendNibble(char nibbleToSend);
+static void LCD_pulseEnablePin(void);
+static char LCD_enablePulsReceive(void);
 
 /* delay ms
  * This function realize waitnig in multiplacion of 1ms
@@ -32,42 +28,35 @@ char LCD_receive(void);
  *
  * 		void
  */
-uint16_t time_loop = 0;
+static volatile uint16_t time_loop = 0U;
 void delay_ms(uint16_t time_ms)
 {
-	time_loop = 0;
-	// set timer 0
-	TA0CCR0 = 3000;
-	TA0CCTL0 |= CCIE;		// enable interupt
-	// set clock source to aux on 3 MHz, set timer to count up, set a prescaler to 8
+	time_loop = 0U;
+	/* Configure Timer A0: SMCLK / 1, count-up to 3000 â†’ ~1 ms tick */
+	TA0CCR0 = 3000U;
+	TA0CCTL0 |= CCIE;
 	TA0CTL |= TIMER_A_CTL_TASSEL_2 | TIMER_A_CTL_MC__UP | TIMER_A_CTL_ID_0;
 
-    NVIC->ISER[0] |= 1 << TA0_0_IRQn;
+    NVIC->ISER[0] |= 1U << (uint32_t)TA0_0_IRQn;
 
     __enable_irq();
-    __enable_interrupt();
 
-	while(1)
+	while (time_loop < time_ms)
 	{
-			if (time_loop >= time_ms)  // if time is up
-			{
-			    TA0CTL &= ~MC_3;        // stop timer
-			    return;
-			}
+	    __wfi();    /* Sleep between timer interrupts to save power */
 	}
+
+	TA0CTL &= ~MC_3;    /* Stop timer */
 }
 
 
 void TA0_ISR_Handler(void)
 {
-    {
-        TA0CTL &= ~MC_3;            // stop timer
-        TA0CCTL0 &= ~CCIFG;         // drop flag
-        TA0R = 0;                   // reset timer time
-        time_loop++;
-        TA0CTL |= TIMER_A_CTL_MC__UP;
-    }
-
+    TA0CTL &= ~MC_3;            /* Stop timer           */
+    TA0CCTL0 &= ~CCIFG;         /* Clear interrupt flag */
+    TA0R = 0U;                  /* Reset counter        */
+    time_loop++;
+    TA0CTL |= TIMER_A_CTL_MC__UP;
 }
 
 
@@ -223,12 +212,11 @@ void LCD_init(void)
 |*    void
 |*
 \*-------------------------------------------------------------------------*/
-void LCD_printStr(char *text)
+void LCD_printStr(const char *text)
 {
-   char *c;
-   c = text;
+   const char *c = text;
 
-   while ((c != 0) && (*c != 0))
+   while ((c != NULL) && (*c != '\0'))
    {
       LCD_sendByte(*c, DATA);
       c++;
@@ -306,7 +294,7 @@ void LCD_sendCommand(char command) {
 |*    void
 |*
 \*-------------------------------------------------------------------------*/
-inline void LCD_sendByte(char byteToSend, uint8_t byteType)
+static void LCD_sendByte(char byteToSend, uint8_t byteType)
 {
    /* Set Reg Select line to appropriate mode (HIGH: data | LOW: command) */
    if (byteType == COMMAND)
@@ -339,7 +327,7 @@ inline void LCD_sendByte(char byteToSend, uint8_t byteType)
 |*    void
 |*
 \*-------------------------------------------------------------------------*/
-void LCD_sendNibble(char nibbleToSend)
+static void LCD_sendNibble(char nibbleToSend)
 {
    /* Clear out all data pins */
    LCD_OUT_DATA &= ~(LCD_MASK_DATA);
@@ -366,62 +354,61 @@ void LCD_sendNibble(char nibbleToSend)
 |*    void
 |*
 \*-------------------------------------------------------------------------*/
-void LCD_pulseEnablePin(void)
+static void LCD_pulseEnablePin(void)
 {
-   /* Pull EN bit low */
-//   LCD_OUT_EN &= ~LCD_PIN_EN;
-//   delay_ms(20);
-
    /* Pull EN bit high */
    LCD_OUT_EN |= LCD_PIN_EN;
-   delay_ms(1);
+   delay_ms(1U);
 
-   /* Pull EN bit low again */
+   /* Pull EN bit low */
    LCD_OUT_EN &= ~LCD_PIN_EN;
-   delay_ms(1);
+   delay_ms(1U);
 }
 
 char LCD_receive(void)
 {
     char upNibble, downNibble, result;
 
-    // nastaveni bitu jako vstupni
+    /* Set data pins as inputs */
     LCD_DIR_DATA &= ~LCD_MASK_DATA;
 
     P4OUT |= LCD_PIN_RW;
     P4OUT |= LCD_PIN_RS;
-    //2x enable
-    P4IFG = 0;
+    P4IFG = 0U;
 
-    upNibble = LCD_enablePulsReceive();
+    upNibble   = LCD_enablePulsReceive();
     downNibble = LCD_enablePulsReceive();
-    // slozeni do jednoho byte
-    result = ((upNibble << 4) + downNibble);
 
-    // nastaveni bitu jako vystupnich
+    /* Combine nibbles into a full byte */
+    result = (char)(((uint8_t)upNibble << 4U) | (uint8_t)downNibble);
+
+    /* Restore data pins as outputs */
     LCD_DIR_DATA |= LCD_MASK_DATA;
     P4OUT &= ~LCD_PIN_RW;
     P4OUT &= ~LCD_PIN_RS;
-    // odeslani vysledku
+
     return result;
 }
 
-// nutne protoze stav portu se cte v momente kdyz je EN v log 1 a to se standartním LCD_pulseEnablePin nejde
-char LCD_enablePulsReceive(void)
+/*
+ * Read one nibble from the LCD.
+ * Port state must be sampled while EN is high (differs from LCD_pulseEnablePin).
+ */
+static char LCD_enablePulsReceive(void)
 {
-       char result;
+    char result;
 
-       /* Pull EN bit high */
-       LCD_OUT_EN |= LCD_PIN_EN;
-       delay_ms(1);
+    /* Pull EN bit high */
+    LCD_OUT_EN |= LCD_PIN_EN;
+    delay_ms(1U);
 
-       result = LCD_PIN_DATA & LCD_MASK_DATA;
+    result = (char)(LCD_PIN_DATA & LCD_MASK_DATA);
 
-       /* Pull EN bit low again */
-       LCD_OUT_EN &= ~LCD_PIN_EN;
-       delay_ms(1);
+    /* Pull EN bit low */
+    LCD_OUT_EN &= ~LCD_PIN_EN;
+    delay_ms(1U);
 
-       return result;
+    return result;
 }
 
 

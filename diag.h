@@ -3,27 +3,30 @@
  *
  *  Created on: 3. 4. 2016
  *      Author: Petr Gallistl
- *      this function wil flashing with a led and will do diagnostick
  *
+ *  Startup diagnostics: LED blink animation and hardware self-test.
  */
 
-#ifndef diag_H_
-#define diag_H_
+#ifndef DIAG_H_
+#define DIAG_H_
 
-#define DK_DIAG_STATUS_OK       0        // diagnostika skoncila stavem v poradku
-#define DK_DIAG_STATUS_I2C_E    1        // chzba I2C
-#define DK_DIAG_STATUS_LCD_E    2        // diagnostika displeje skoncila neuspesne
-#define DK_DIAG_STATUS_CHYBA    3        // diagnostika skoncila neuspesne
-#define DK_DIAG_STATUS_MEM_E	4		 // diagnostika skoncila chybou testu pameti
-#define DK_DIAG_STATUS_RESET    5        // diagnostika skoncila resetem
+#include <stdint.h>
 
-#define DK_DIAG_WTD_TIME        10        // pocet vterin pro WTD v diagnostice, za jak dlouho se ma diagnostika stihnout
-#define DK_SENSOR_ADDRESS       0x48     // adresa senzoru na i2c
-#define MSK_I2C_ADDR            0x3ff    // vymaskovani bitu pro ziskani adresy z registru UCBxADDRX
+/* Diagnostic status codes returned by diag() */
+#define DK_DIAG_STATUS_OK       ((uint8_t)0U)  /* All tests passed          */
+#define DK_DIAG_STATUS_I2C_E    ((uint8_t)1U)  /* I2C sensor not detected   */
+#define DK_DIAG_STATUS_LCD_E    ((uint8_t)2U)  /* LCD read-back mismatch    */
+#define DK_DIAG_STATUS_CHYBA    ((uint8_t)3U)  /* General / unknown error   */
+#define DK_DIAG_STATUS_MEM_E    ((uint8_t)4U)  /* SRAM test failure         */
+#define DK_DIAG_STATUS_RESET    ((uint8_t)5U)  /* Previous hard-reset event */
 
-// zadefinovani verejnych funkci
-int diag(void);
+#define DK_DIAG_WTD_TIME        ((uint8_t)10U) /* Watchdog timeout in seconds */
+#define DK_SENSOR_ADDRESS       ((uint8_t)0x48U) /* I2C address of temperature sensor */
+#define MSK_I2C_ADDR            ((uint16_t)0x03FFU) /* Mask for UCBxADDRX address bits */
 
-#endif /* diag_H_ */
+/* Public function */
+uint8_t diag(void);
+
+#endif /* DIAG_H_ */
 
 
