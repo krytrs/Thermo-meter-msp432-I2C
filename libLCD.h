@@ -109,7 +109,6 @@
 \****************************/
 #define     COMMAND           0
 #define     DATA              1
-typedef     unsigned char     uint8_t;
 
 
 /******************************\
@@ -122,7 +121,7 @@ void LCD_printChar(char character);
 void LCD_sendCommand(char command);
 void LCD_setCursorPosition(uint8_t row, uint8_t col);
 void LCD_clearScreen(void);
-void LCD_print_data(int8_t data, int8_t poziceX, int8_t poziceY);
+void LCD_print_data(uint8_t data, uint8_t col, uint8_t row);
 char LCD_receive(void);
 #endif
 

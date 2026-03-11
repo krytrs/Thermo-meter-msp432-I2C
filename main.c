@@ -60,7 +60,7 @@ int main(void)
             LCD_clearScreen();
             LCD_setCursorPosition(0U, 0U);
             LCD_printStr("Teplota: ");
-            LCD_print_data((int8_t)temperature, 9, 0);
+            LCD_print_data(temperature, 9U, 0U);
             temperatureOld = temperature;
         }
 
