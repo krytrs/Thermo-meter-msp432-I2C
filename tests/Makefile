@@ -9,9 +9,7 @@
 #
 # Compiler
 # --------
-# C11 is required so that the typedef redeclaration of uint8_t in
-# libLCD.h (which clashes with the <stdint.h> definition already pulled
-# in by our msp.h mock) is accepted as a compatible redeclaration.
+# C11 is used for broad standards compliance.
 #
 # Include-path strategy
 # ----------------------

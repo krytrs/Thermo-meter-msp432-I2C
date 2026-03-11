@@ -223,15 +223,14 @@ void LCD_printStr(const char *text)
       c++;
    }
 }
-// tato funkce prevadi data a pak je tiskne na displej
-void LCD_print_data(int8_t data, int8_t poziceX, int8_t poziceY)
+/* Print a two-digit decimal number at the given (col, row) position. */
+void LCD_print_data(uint8_t data, uint8_t col, uint8_t row)
 {
-	char dataDesitky, dataJednotky;
-	dataDesitky = (data/10)+48;
-	dataJednotky = (data%10)+48;
-	LCD_setCursorPosition(poziceY, poziceX);
-	LCD_printChar(dataDesitky);
-	LCD_printChar(dataJednotky);
+   char tens  = (char)((data / 10) + '0');
+   char units = (char)((data % 10) + '0');
+   LCD_setCursorPosition(row, col);
+   LCD_printChar(tens);
+   LCD_printChar(units);
 }
 
 
@@ -373,9 +372,8 @@ char LCD_receive(void)
     /* Set data pins as inputs */
     LCD_DIR_DATA &= ~LCD_MASK_DATA;
 
-    P4OUT |= LCD_PIN_RW;
-    P4OUT |= LCD_PIN_RS;
-    P4IFG = 0U;
+    LCD_OUT_RW |= LCD_PIN_RW;
+    LCD_OUT_RS |= LCD_PIN_RS;
 
     upNibble   = LCD_enablePulsReceive();
     downNibble = LCD_enablePulsReceive();
@@ -385,8 +383,8 @@ char LCD_receive(void)
 
     /* Restore data pins as outputs */
     LCD_DIR_DATA |= LCD_MASK_DATA;
-    P4OUT &= ~LCD_PIN_RW;
-    P4OUT &= ~LCD_PIN_RS;
+    LCD_OUT_RW &= ~LCD_PIN_RW;
+    LCD_OUT_RS &= ~LCD_PIN_RS;
 
     return result;
 }
