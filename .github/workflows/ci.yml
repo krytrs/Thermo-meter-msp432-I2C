@@ -1,0 +1,45 @@
+# .github/workflows/ci.yml
+#
+# Build and run host-side unit tests for Thermo-meter-msp432-I2C.
+# Produces a step summary report and saves the raw log as an artifact.
+
+name: CI – Unit Tests
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  test:
+    name: Build & Run Tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build & run tests
+        id: run_tests
+        working-directory: tests
+        run: |
+          make test 2>&1 | tee ../test-results.txt
+          exit ${PIPESTATUS[0]}
+
+      - name: Publish summary
+        if: always()
+        run: |
+          echo "## Test Results" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          cat test-results.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload test log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results.txt
