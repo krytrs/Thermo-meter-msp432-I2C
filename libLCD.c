@@ -6,6 +6,7 @@
  */
 
 #include "libLCD.h"
+#include <stddef.h>
 
 
 /******************************\

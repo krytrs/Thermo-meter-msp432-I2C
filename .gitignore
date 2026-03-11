@@ -216,3 +216,8 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+
+# Test binaries (host-built, not for version control)
+tests/test_I2C
+tests/test_libLCD
+tests/test_diag_constants
