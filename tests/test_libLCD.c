@@ -316,6 +316,156 @@ static void test_LCD_print_data_cursor_row1(void)
 }
 
 /* ================================================================== *
+ *  LCD_sendCommand                                                    *
+ * ================================================================== */
+
+/*
+ * LCD_sendCommand(cmd) must send the byte as a command (RS=0).
+ * The result is two nibbles, both with g_is_data == 0.
+ */
+static void test_LCD_sendCommand_sends_clear_display(void)
+{
+    capture_reset();
+    LCD_sendCommand(0x01U);          /* CLEAR_DISP_CMD */
+    TEST_ASSERT(g_nibble_count == 2);
+    TEST_ASSERT(g_is_data[0] == 0U); /* RS=0 → command */
+    TEST_ASSERT(nibbles_to_byte(0) == 0x01U);
+}
+
+static void test_LCD_sendCommand_sends_return_home(void)
+{
+    capture_reset();
+    LCD_sendCommand(0x02U);          /* RET_HOME_CMD */
+    TEST_ASSERT(g_nibble_count == 2);
+    TEST_ASSERT(g_is_data[0] == 0U);
+    TEST_ASSERT(nibbles_to_byte(0) == 0x02U);
+}
+
+static void test_LCD_sendCommand_sends_function_set(void)
+{
+    capture_reset();
+    LCD_sendCommand(FUNCTION_SET_CMD); /* 0x28 */
+    TEST_ASSERT(g_nibble_count == 2);
+    TEST_ASSERT(g_is_data[0] == 0U);
+    TEST_ASSERT(nibbles_to_byte(0) == (uint8_t)FUNCTION_SET_CMD);
+}
+
+/* ================================================================== *
+ *  LCD_init                                                           *
+ * ================================================================== */
+
+/*
+ * LCD_init() must configure all four groups of LCD pins as outputs on
+ * port P4.  The relevant bits are:
+ *   LCD_MASK_DATA = BIT0|BIT1|BIT2|BIT3  (0x0F)
+ *   LCD_PIN_RS    = BIT4                  (0x10)
+ *   LCD_PIN_RW    = BIT5                  (0x20)
+ *   LCD_PIN_EN    = BIT6                  (0x40)
+ *
+ * The initialisation sequence sends 3 bare nibbles (0x03 ×3), one bare
+ * nibble (0x02), then four full-byte commands — 12 EN pulses in all.
+ */
+static void test_LCD_init_sets_data_pins_as_output(void)
+{
+    capture_reset();
+    P4DIR = 0U;
+    LCD_init();
+    TEST_ASSERT((P4DIR & LCD_MASK_DATA) == LCD_MASK_DATA);
+}
+
+static void test_LCD_init_sets_control_pins_as_output(void)
+{
+    capture_reset();
+    P4DIR = 0U;
+    LCD_init();
+    TEST_ASSERT((P4DIR & LCD_PIN_RS) != 0U);
+    TEST_ASSERT((P4DIR & LCD_PIN_EN) != 0U);
+    TEST_ASSERT((P4DIR & LCD_PIN_RW) != 0U);
+}
+
+static void test_LCD_init_leaves_enable_pin_low(void)
+{
+    /* Start with all bits high; after init the EN pin must be low. */
+    capture_reset();
+    P4OUT = 0xFFU;
+    LCD_init();
+    TEST_ASSERT((P4OUT & LCD_PIN_EN) == 0U);
+}
+
+static void test_LCD_init_sends_twelve_nibbles(void)
+{
+    /*
+     * 3 × sendNibble(0x03) = 3 nibbles
+     * 1 × sendNibble(0x02) = 1 nibble
+     * 4 × sendCommand (2 nibbles each) = 8 nibbles
+     * ──────────────────────────────────────────
+     * total = 12 nibbles
+     */
+    capture_reset();
+    LCD_init();
+    TEST_ASSERT(g_nibble_count == 12);
+}
+
+/* ================================================================== *
+ *  LCD_receive                                                        *
+ * ================================================================== */
+
+/*
+ * LCD_receive() reads two nibbles from the LCD data bus (P4IN[3:0])
+ * and combines them into one byte: (upNibble << 4) | downNibble.
+ *
+ * Because P4IN is a plain variable in the mock and does not change
+ * between the two reads, both nibbles will be the same value.
+ *
+ * Note: the EN pulses used during receive will also trigger the
+ * mock_tick nibble-capture; those spurious entries in the capture
+ * buffer are irrelevant for the checks below.
+ */
+static void test_LCD_receive_combines_nibbles(void)
+{
+    capture_reset();
+    P4IN = 0x05U;               /* Both nibbles read as 0x05 */
+    char result = LCD_receive();
+    /* result = (0x05 << 4) | 0x05 = 0x55 */
+    TEST_ASSERT((uint8_t)result == 0x55U);
+}
+
+static void test_LCD_receive_zero_nibbles(void)
+{
+    capture_reset();
+    P4IN = 0x00U;
+    char result = LCD_receive();
+    TEST_ASSERT((uint8_t)result == 0x00U);
+}
+
+static void test_LCD_receive_full_nibbles(void)
+{
+    capture_reset();
+    P4IN = 0x0FU;               /* Both nibbles = 0x0F → 0xFF */
+    char result = LCD_receive();
+    TEST_ASSERT((uint8_t)result == 0xFFU);
+}
+
+static void test_LCD_receive_restores_data_direction(void)
+{
+    capture_reset();
+    P4DIR = 0xFFU;
+    P4IN  = 0x00U;
+    (void)LCD_receive();
+    /* Data pins must be restored as outputs after receive */
+    TEST_ASSERT((P4DIR & LCD_MASK_DATA) == LCD_MASK_DATA);
+}
+
+static void test_LCD_receive_clears_rw_and_rs(void)
+{
+    capture_reset();
+    P4IN = 0x00U;
+    (void)LCD_receive();
+    TEST_ASSERT((P4OUT & LCD_PIN_RW) == 0U);
+    TEST_ASSERT((P4OUT & LCD_PIN_RS) == 0U);
+}
+
+/* ================================================================== *
  *  main                                                               *
  * ================================================================== */
 
@@ -351,6 +501,24 @@ int main(void)
     RUN_TEST(test_LCD_print_data_value_10);
     RUN_TEST(test_LCD_print_data_cursor_position);
     RUN_TEST(test_LCD_print_data_cursor_row1);
+
+    /* LCD_sendCommand */
+    RUN_TEST(test_LCD_sendCommand_sends_clear_display);
+    RUN_TEST(test_LCD_sendCommand_sends_return_home);
+    RUN_TEST(test_LCD_sendCommand_sends_function_set);
+
+    /* LCD_init */
+    RUN_TEST(test_LCD_init_sets_data_pins_as_output);
+    RUN_TEST(test_LCD_init_sets_control_pins_as_output);
+    RUN_TEST(test_LCD_init_leaves_enable_pin_low);
+    RUN_TEST(test_LCD_init_sends_twelve_nibbles);
+
+    /* LCD_receive */
+    RUN_TEST(test_LCD_receive_combines_nibbles);
+    RUN_TEST(test_LCD_receive_zero_nibbles);
+    RUN_TEST(test_LCD_receive_full_nibbles);
+    RUN_TEST(test_LCD_receive_restores_data_direction);
+    RUN_TEST(test_LCD_receive_clears_rw_and_rs);
 
     PRINT_RESULTS();
     RETURN_TEST_RESULT();
